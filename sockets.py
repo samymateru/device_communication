@@ -2,8 +2,10 @@ import asyncio
 
 
 class Socket:
-    def __init__(self):
+    def __init__(self, ip, port):
         self.client_connections = set()
+        self.ip = ip
+        self.port = port
 
     async def handle_client(self, reader, writer):
         self.client_connections.add(writer)
@@ -15,7 +17,6 @@ class Socket:
 
                 message = data.decode()
                 print(f"Received {message!r}")
-                print(len(self.client_connections))
 
         except asyncio.CancelledError:
             self.client_connections.remove(writer)
@@ -25,7 +26,7 @@ class Socket:
     async def main(self):
         server = await asyncio.start_server(
             lambda r, w: asyncio.create_task(self.handle_client(r, w)),
-            '127.0.0.1', 4000)
+            host=self.ip, port=self.port)
 
         async with server:
             await server.serve_forever()

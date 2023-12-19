@@ -4,3 +4,4 @@ test2.py
 .idea
 venv
 __pycache__
+.env

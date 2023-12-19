@@ -9,9 +9,11 @@ SECRET_KEY = "1234567890"
 
 class Websocket:
 
-    def __init__(self):
+    def __init__(self, ip,port):
         self.client_connections = deque()
         self.devices_list = {}
+        self.ip = ip
+        self.port = port
 
     async def websocket_handler(self, websocket, path):
         is_authenticated = await self.authenticate(websocket, path)
@@ -46,7 +48,7 @@ class Websocket:
             await asyncio.sleep(1)
 
     async def main(self):
-        server = await websockets.serve(self.websocket_handler, "localhost", 5000)
+        server = await websockets.serve(self.websocket_handler, host=self.ip, port=self.port)
         task = asyncio.create_task(self.loop())
         await asyncio.gather(task, server.wait_closed())
         await server.wait_closed()
